@@ -1,19 +1,36 @@
 const express  = require("express");
-const app = express(); // ye hum server express server bnane ke liye use kar rahe hain
+require("./config/database");
+const connectDB = require("./config/database");
+const app = express();
+const User = require("./models/user");
 
-app.use("/",(req,res)=>{
-  res.send("Hello from Express Server");
+app.post("/signup", async(req,res)=>{
+   const user = new User({
+    firstName: "Virat",
+    lastName: "Kohli",
+    emailId: "7104@gmail.com",
+    password: "password123",
+   });
+
+   try{
+   await user.save();
+   res.send("User created successfully");}
+   catch(err){
+    res.status(500).send("Error creating user: " + err.message);
+   }
 });
 
-app.use("/hello",(req,res)=>{
-  res.send("Hello from Express Server on /hello route");
-})
-
-app.use("/api",(req,res)=>{
-  res.json({message: "Hello from Express Server on /api route"});
-
-})
-app.listen(7777,()=>{
+connectDB()
+.then(()=>{
+  console.log("databse connected successfully");
+  app.listen(7777,()=>{
   console.log("Server is running on port 7777");
+});
 })
+.catch((err)=>{
+  console.error("Database connection failed:");
+}); 
+
+
+
 
